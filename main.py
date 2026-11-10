@@ -1,6 +1,132 @@
-import colorama
+
 from colorama import Fore
 import requests
+import yfinance as yf
+#importing yfinance to gather info about gold, tsla_mcap, etc.
+
+#The Test and Benchmark
+def benchmark_test(user_target_price, user_invest_amount, token_price_usd, token_real_supply):
+    #we will fetch market caps from coinGecko
+    #try/except to handle communicating with servers
+    try:
+        geckoURL = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_market_cap=true"
+        coinResp = requests.get(geckoURL, timeout = 5)
+        if coinResp.status_code != 200:
+            return Fore.RED + f"Could Not Access URL | {url}"
+
+        #Extracting GOLD, BTC, TESLA_MCAP
+        try:
+            coinData = coinResp.json()
+            btc_mcap = coinData["bitcoin"]["usd_market_cap"]
+        except Exception as e:
+            print(f"Failed Fetching Bitcoing M-CAP {str(e)}")
+            btc_mcap = 1600000000000
+
+        try:
+            tsla = yf.Ticker("TSLA")
+            tsla_mcap = tsla.info.get("marketCap")
+        except Exception as e:
+            print(f"Failed Fetching TESLA M-CAP {str(e)}")
+            tsla_mcap = 1400000000000
+
+
+        try:
+            gold = yf.Ticker("GC=F")
+            hist = gold.history(period="1d")
+            if not hist.empty:
+                price_per_ounce = float(hist['Close'].iloc[-1])
+
+                #Convert To Metric scale
+                grams_per_troy_ounce = 31.1034768
+                grams_per_metric_ton = 1000000
+                troy_ounces_per_ton = grams_per_metric_ton / grams_per_troy_ounce
+
+                total_gold_tons = 212500
+                price_per_ton = price_per_ounce * troy_ounces_per_ton
+
+                gold_mcap = price_per_ton * total_gold_tons
+        except Exception as e:
+            print(f"Error fetching Gold Price: {str(e)}")
+            gold_mcap = 29000000000000
+
+        #after handling all of these errors and gathering market caps
+        #we start the benchmark code
+        #Calculating growth
+        growth_x = user_invest_amount / token_price_usd
+        #Calculating required Market Cap
+        trgt_mcap = token_real_supply * user_target_price
+        #Calculate the three Mcap ratios with our target price to determine how realistic it would be
+        gld_ratio = trgt_mcap / gold_mcap
+
+        tsla_ratio = trgt_mcap / tsla_mcap
+
+        btc_ratio = trgt_mcap / btc_mcap
+        #hypothetical growth
+        expected_payout = user_invest_amount * growth_x
+
+        max_price_at_tsla = tsla_mcap / token_real_supply
+        max_price_at_btc = btc_mcap / token_real_supply
+        max_price_at_gold = gold_mcap / token_real_supply
+
+        print("Analysis Done...")
+
+        if trgt_mcap >= gold_mcap:
+            print(Fore.RED + f"!!!CRITICAL MEMECOIN TRAP!!!")
+            print(f"Required Target Market Cap | ${trgt_mcap:,.2f}")
+            print(f"Ratio to Global Gold       | {gld_ratio:.2f}x Larger than all the Gold")
+            print(f"Target Growth (X)          | {growth_x:,.2f}x")
+            print(f"Expected Payout            | ${expected_payout:,.2f}")
+            print(f"Max Possible Price at Gold | ${max_price_at_gold:,.10f}")
+
+        elif trgt_mcap >= tsla_mcap:
+            print(Fore.RED + f"!!!CRITICAL MEMECOIN TRAP!!!")
+            print(f"Required Target Market Cap | ${trgt_mcap:,.2f}")
+            print(f"Ratio to Tesla M-Cap       | {tsla_ratio:.2f}x Larger than TESLA")
+            print(f"Target Growth (X)          | {growth_x:,.2f}x")
+            print(f"Expected Payout            | ${expected_payout:,.2f}")
+            print(f"Max Possible Price at TSLA | ${max_price_at_tsla:,.10f}")
+
+        elif trgt_mcap >= btc_mcap:
+            print(Fore.RED + f"!!!CRITICAL MEMECOIN TRAP!!!")
+            print(f"Required Target Market Cap | ${trgt_mcap:,.2f}")
+            print(f"Ratio to Bitcoin M-Cap     | {btc_ratio:.2f}x Larger than BTC")
+            print(f"Target Growth (X)          | {growth_x:,.2f}x")
+            print(f"Expected Payout            | ${expected_payout:,.2f}")
+            print(f"Max Possible Price at BTC  | ${max_price_at_btc:,.10f}")
+
+        elif trgt_mcap >= 100000000000:
+            print(Fore.YELLOW + "High Ambition: Requires: 100B+ $ (Top 5 Global Crypto Asset)")
+            print(f"Required Target Market Cap | ${trgt_mcap:,.2f}")
+            print(f"Target Growth (X)          | {growth_x:,.2f}x")
+            print(f"Expected Payout            | ${expected_payout:,.2f}")
+
+        else:
+            print(Fore.GREEN + "Realistic Target")
+            print(f"Required Market Cap        | ${trgt_mcap:,.2f} can be achieved\n"
+                  f"Target Growth (X)          | {growth_x:,.2f}x\n"
+                  f"Expected Payout            | ${expected_payout:,.2f}\n"
+                  f"However, unlikely if Meme-Coin")
+        return None
+
+
+
+    except requests.exceptions.RequestException as a:
+        print(f"Connection Error {str(a)}")
+
+
+
+
+
+
+#Determining Market Cap, to see weather it is a small/medium or Large Cap
+def determine_cap(marketcap):
+    if marketcap < 1000000000.00:
+        return Fore.YELLOW + f"{marketcap:,.2f} $\nMarket Cap is less than 1 Billion"
+    elif 1000000000.00 < marketcap < 10000000000.00:
+        return Fore.LIGHTYELLOW_EX + f"{marketcap:,.2f} $ \nMarket Cap is less than 10 Billion"
+    else:
+        return Fore.GREEN + f"{marketcap:,.2f} $\nMarket Cap is More than 10 Billion"
+
 
 #defining a user inputted Coin
 def get_dex_token_data(user_query):
@@ -247,6 +373,8 @@ if __name__ == "__main__":
 
             #calculating Drop percentage
             price_impact = (1 - (crashed_price / current_price)) * 100
+            #Storing Market Cap size
+            cap_size = determine_cap(market_cap)
 
             print(Fore.MAGENTA + "--- WHALE DUMP SIMULATION (x * y = k) ---")
             #Checking weather price is too low
@@ -254,15 +382,37 @@ if __name__ == "__main__":
                 print(Fore.MAGENTA + f"Current Price | {current_price:.10f} $ \n"
                                      f"Whale Tokens  | {whale_balance:,.2f} {symbol}\n"
                                      f"New Price     | {crashed_price:,.10f} $\n"
-                                     f"Price Impact  | {price_impact:,.2f}% \n")
+                                     f"Price Impact  | {price_impact:,.2f}% \n"
+                                     f"Market Cap    | {cap_size} $\n")
             else:
 
                 print(Fore.MAGENTA + f"Current Price | {current_price:.2f} $ \n"
                                      f"Whale Tokens  | {whale_balance:,.2f} {symbol}\n"
                                      f"New Price     | {crashed_price:,.2f} $\n"
-                                     f"Price Impact  | {price_impact:,.2f}% \n")
-            print("-" * 107)
+                                     f"Price Impact  | {price_impact:,.2f}% \n"
+                                     f"Market Cap    | {cap_size} $\n")
+
+
+            print(Fore.MAGENTA + "-" * 107)
             print(Fore.LIGHTBLUE_EX + f"Information listed")
+
+            #The tester
+
+            while True:
+                test_choice = input(
+                    Fore.LIGHTWHITE_EX + "Would you like to test a Target Price against market benchmarks (Gold, Tesla, BTC)? (y/n): ")
+                if test_choice.lower() not in ["yes", "y", "no", "n"]:
+                    print(Fore.RED + "This is an invalid input, please enter either yes or no")
+                else:
+                    break
+
+            if test_choice.lower() in ["yes", "y"]:
+                user_target_price = float(input(Fore.LIGHTWHITE_EX + "Enter your target price in USD (e.g. 1.00): "))
+                user_invest_amount = float(
+                    input(Fore.LIGHTWHITE_EX + "Enter how much you wish to invest right now in USD (e.g. 100): "))
+
+                # Calling the benchmark test function
+                benchmark_test(user_target_price, user_invest_amount, price_usd, real_supply)
         elif choice == 2:
             print("Have a Nice Day")
             break
