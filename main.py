@@ -4,15 +4,86 @@ import requests
 import yfinance as yf
 #importing yfinance to gather info about gold, tsla_mcap, etc.
 
+
+
+
+#LTV and Dual-Unit Liquidation
+def get_live_aave_params(token_address, symbol):
+    #storing avve provider
+    aave_provider = "0x7B4EB56E7CD4b454BA8ff71E4518426369a138a3"
+
+    #Solidity has 4-byte keccak selector which is -> "0x3e150141"
+    #To pass the user's token address it must have 24 0's in the beggining
+                                                            #removing 0x from address
+    call_data = "0x3e150141" + "000000000000000000000000" + token_address[2:].lower()
+
+    rpc_payload = {
+        "jsonrpc":"2.0",
+        "params":[{"to": aave_provider, "data": call_data}, "latest"]
+        "id": 1
+                   }
+
+    #sending Post request
+    try:
+        aave_resp = requests.post(rpc_url, json=rpc_payload, timeout=5)
+        if aave_resp.status_code != 200:
+            return Fore.RED + f"Something went wrong {aave_resp.status_code}"
+
+        #if link responds
+        hex_result = aave_resp.json()["result"]
+        #hex result is gigantic, check if it is actually gigantic
+        if len(hex_result) > 260:
+            #split up the result
+            chunk1 = int(hex_result[2:66], 16)
+            #max ltv is stored in basis points like 7050 70.50%
+            max_ltv = int(hex_result[66:130], 16) / 100
+            #liquidation threshold is also stored in basis points
+            liq_threshold = int(hex_result[130:194], 16) / 100
+            #same with penalty/bonus
+            raw_bonus = int(hex_result[194:258], 16) / 100
+            #however, raw bonus should be checked
+            if raw_bonus > 100:
+                #subtract 100 to retrieve actual percentage
+                liq_penalty = raw_bonus - 100
+            else:
+                liq_penalty = 5.0
+
+            #Meme-coins can't be collateral
+            if max_ltv > 0:
+                print(Fore.GREEN + f"Aave V3 on-chain parameters were extracted for {symbol} !")
+                return max_ltv, liq_threshold, liq_penalty, True
+            else:
+                print(Fore.YELLOW + f"{symbol} is rejected on Aave V3 (0% Max LTV)\n"
+                                    f"Application will load default parameters as a mock test\n"
+                                    f"!!! -> DO NOT INTERPRET THIS AS ACTUAL INFO <- !!!\n"
+                                    f"Max LTV = 75.0 | Liquidation Threshold = 80.0 | Liquidation Penalty = 5.0")
+                return 75.0, 80.0, 5.0, False
+
+
+    except Exception as e1:
+        print(Fore.RED + str(e1))
+        return None
+
+
+
+
+
 #The Test and Benchmark
 def benchmark_test(user_target_price, user_invest_amount, token_price_usd, token_real_supply):
     #we will fetch market caps from coinGecko
     #try/except to handle communicating with servers
+    #initialize the market caps for gold btc and tsla, if fetching fails
+    gold_mcap = 29000000000000
+    btc_mcap = 1600000000000
+    tsla_mcap = 1400000000000
     try:
         geckoURL = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_market_cap=true"
         coinResp = requests.get(geckoURL, timeout = 5)
         if coinResp.status_code != 200:
-            return Fore.RED + f"Could Not Access URL | {url}"
+            print(Fore.RED + f"Could Not Access URL | {geckoURL}")
+
+
+
 
         #Extracting GOLD, BTC, TESLA_MCAP
         try:
@@ -20,14 +91,15 @@ def benchmark_test(user_target_price, user_invest_amount, token_price_usd, token
             btc_mcap = coinData["bitcoin"]["usd_market_cap"]
         except Exception as e:
             print(f"Failed Fetching Bitcoing M-CAP {str(e)}")
-            btc_mcap = 1600000000000
 
         try:
             tsla = yf.Ticker("TSLA")
-            tsla_mcap = tsla.info.get("marketCap")
+            fetched_tsla_mcap = tsla.info.get("marketCap")
+            #added fallback to coin market caps
+            if fetched_tsla_mcap:
+                tsla_mcap = fetched_tsla_mcap
         except Exception as e:
             print(f"Failed Fetching TESLA M-CAP {str(e)}")
-            tsla_mcap = 1400000000000
 
 
         try:
@@ -47,12 +119,11 @@ def benchmark_test(user_target_price, user_invest_amount, token_price_usd, token
                 gold_mcap = price_per_ton * total_gold_tons
         except Exception as e:
             print(f"Error fetching Gold Price: {str(e)}")
-            gold_mcap = 29000000000000
 
         #after handling all of these errors and gathering market caps
         #we start the benchmark code
         #Calculating growth
-        growth_x = user_invest_amount / token_price_usd
+        growth_x = user_target_price / token_price_usd
         #Calculating required Market Cap
         trgt_mcap = token_real_supply * user_target_price
         #Calculate the three Mcap ratios with our target price to determine how realistic it would be
@@ -78,13 +149,6 @@ def benchmark_test(user_target_price, user_invest_amount, token_price_usd, token
             print(f"Expected Payout            | ${expected_payout:,.2f}")
             print(f"Max Possible Price at Gold | ${max_price_at_gold:,.10f}")
 
-        elif trgt_mcap >= tsla_mcap:
-            print(Fore.RED + f"!!!CRITICAL MEMECOIN TRAP!!!")
-            print(f"Required Target Market Cap | ${trgt_mcap:,.2f}")
-            print(f"Ratio to Tesla M-Cap       | {tsla_ratio:.2f}x Larger than TESLA")
-            print(f"Target Growth (X)          | {growth_x:,.2f}x")
-            print(f"Expected Payout            | ${expected_payout:,.2f}")
-            print(f"Max Possible Price at TSLA | ${max_price_at_tsla:,.10f}")
 
         elif trgt_mcap >= btc_mcap:
             print(Fore.RED + f"!!!CRITICAL MEMECOIN TRAP!!!")
@@ -93,6 +157,15 @@ def benchmark_test(user_target_price, user_invest_amount, token_price_usd, token
             print(f"Target Growth (X)          | {growth_x:,.2f}x")
             print(f"Expected Payout            | ${expected_payout:,.2f}")
             print(f"Max Possible Price at BTC  | ${max_price_at_btc:,.10f}")
+
+        elif trgt_mcap >= tsla_mcap:
+            print(Fore.RED + f"!!!CRITICAL MEMECOIN TRAP!!!")
+            print(f"Required Target Market Cap | ${trgt_mcap:,.2f}")
+            print(f"Ratio to Tesla M-Cap       | {tsla_ratio:.2f}x Larger than TESLA")
+            print(f"Target Growth (X)          | {growth_x:,.2f}x")
+            print(f"Expected Payout            | ${expected_payout:,.2f}")
+            print(f"Max Possible Price at TSLA | ${max_price_at_tsla:,.10f}")
+
 
         elif trgt_mcap >= 100000000000:
             print(Fore.YELLOW + "High Ambition: Requires: 100B+ $ (Top 5 Global Crypto Asset)")
@@ -158,12 +231,21 @@ def get_dex_token_data(user_query):
                 #looping through the pairs
                 for pair in pairs_list:
                     #Checking for conditions, and if our list data matches everything we are trying to retrieve
-                    if pair.get("chainId") == "ethereum" and "liquidity" in pair and pair["baseToken"]["symbol"].lower() == user_query.lower():
+                    if pair.get("chainId") == "ethereum" and "liquidity" in pair and (pair["baseToken"]["symbol"].lower() == user_query.lower()
+                            or pair["baseToken"]["address"].lower() == user_query.lower()):
                         token_addrs = pair["baseToken"]["address"]
                         dex_name = pair["dexId"]
                         pool_token_reserve = float(pair["liquidity"]["base"])
                         print(Fore.GREEN + f"DEX POOL Was Found | {dex_name}")
                         #returning gathered values
+                        return token_addrs, dex_name, pool_token_reserve
+                    #checking if a query matches the quote token or a 0x address
+                    elif pair.get("chainId") == "ethereum" and "liquidity" in pair and (pair["quoteToken"]["symbol"].lower() == user_query.lower() or pair["quoteToken"]["address"].lower() == user_query.lower()):
+                        token_addrs = pair["quoteToken"]["address"]
+                        dex_name = pair["dexId"]
+                        pool_token_reserve = float(pair["liquidity"]["quote"])
+                        print(Fore.GREEN + f"DEX POOL Was Found | {dex_name}")
+                        # returning gathered values
                         return token_addrs, dex_name, pool_token_reserve
 
             elif "pairs" not in dex_data or dex_data["pairs"] is None:
@@ -325,8 +407,8 @@ if __name__ == "__main__":
                     #Checking if address was permanently removed or burned
                     if holder_address.endswith("dead") or holder_address.endswith("000000"):
                         print(Fore.BLUE + "This is a burn Address")
-
-                    if bytecode == "0x" or bytecode.startswith("0xef01"):
+                    #changed to Elif, since just if would throw out incorrect info
+                    elif bytecode == "0x" or bytecode.startswith("0xef01"):
                         if share >= 50.0:
                             print(Fore.RED + f"Address: {holder_address:<10} | Share: {share:.2f}% | Amount: {holder_dollar_value:,.2f} $ \n"
                                              f"Can Crash The Token")
