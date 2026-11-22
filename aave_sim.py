@@ -51,7 +51,13 @@ class AaveSim:
                 if max_ltv > 0:
                     print(Fore.GREEN + f"Aave V3 on-chain parameters were extracted for {symbol} !")
                     return max_ltv, liq_threshold, liq_penalty, True
-                else:
+                elif max_ltv == 0 and liq_threshold > 0:
+                    print(Fore.YELLOW + f"----------------------------WARNING!!!-------------------------------\n"
+                                        f"Aave V3 governance currently blocks new loans against asset {symbol}\n"
+                                        f"Existing borrowers still face liquidation on {liq_threshold}%\n")
+                    return 0, liq_threshold, liq_penalty, False
+                elif max_ltv == 0 and liq_threshold == 0:
+
                     print(Fore.YELLOW + f"{symbol} is rejected on Aave V3 (0% Max LTV)\n"
                                         f"Application will load default parameters as a mock test\n"
                                         f"!!! -> DO NOT INTERPRET THIS AS ACTUAL INFO <- !!!\n"

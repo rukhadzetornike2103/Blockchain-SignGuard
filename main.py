@@ -19,7 +19,7 @@ if __name__ == "__main__":
         choice= int(input(Fore.LIGHTWHITE_EX + "Enter what you wish to do?\n"
                           "1. Scan Address\n"
                           "2. Exit\n"
-                          "-->"))
+                          "----> "))
         if choice == 1:
 
             #Changed Token_address handling to implement the above function
@@ -40,14 +40,28 @@ if __name__ == "__main__":
                 response = requests.get(url)
                 if response.status_code != 200:
                     print(Fore.RED + f"url threw Error | Code: {response.status_code}")
+                    continue
 
                 data = response.json()
                 if "error" in data:
                     print(Fore.RED + "Failed to Retrieve Data")
+                    continue
 
                 #Extract data from data = response.json()
                 name = data["name"]
                 symbol = data["symbol"]
+
+                # verify essential fields exist before extracting
+                if "totalSupply" not in data:
+                    print(Fore.RED + f"Missing 'totalSupply' in response for {token_address} — skipping.")
+                    continue
+                if "decimals" not in data:
+                    print(Fore.RED + f"Missing 'decimals' in response for {token_address} — skipping.")
+                    continue
+                if not isinstance(data.get("price"), dict):
+                    print(Fore.RED + f"No tracked market price for {token_address} (Ethplorer returned no price data) — skipping.")
+                    continue
+
                 decimals = int(data["decimals"])
                 raw_supply = float(data["totalSupply"])
                 price_usd = float(data["price"]["rate"])
