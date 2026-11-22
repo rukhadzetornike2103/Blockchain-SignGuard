@@ -1,0 +1,109 @@
+================================================================================
+  AaveSim Class Input Tests
+================================================================================
+  Timestamp: 20261122_181355
+
+--- Test: get_live_aave_params('0x2260FAC5E5542a773aa44fBCfeDf7C193bc2C599', 'WBTC') — WBTC address ---
+  Status: PASS
+  Stdout:
+[32mAave V3 on-chain parameters were extracted for WBTC !
+
+  Return value: (81.0, 85.0, 5.0, True)
+
+--- Test: get_live_aave_params('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', 'WETH') — WETH address ---
+  Status: PASS
+  Stdout:
+[32mAave V3 on-chain parameters were extracted for WETH !
+
+  Return value: (81.0, 84.0, 5.0, True)
+
+--- Test: get_live_aave_params('0x514910771AF9Ca656af840dff83E8264EcF986CA', 'LINK') — LINK address ---
+  Status: PASS
+  Stdout:
+[33m----------------------------WARNING!!!-------------------------------
+Aave V3 governance currently blocks new loans against asset LINK
+Existing borrowers still face liquidation on 71.0%
+
+
+  Return value: (0, 71.0, 7.0, False)
+
+--- Test: get_live_aave_params('', 'WBTC') — Empty address string ---
+  Status: PASS
+  Stdout:
+[31mInvalid token address format: . Must be a 42-char 0x address.
+
+  Return value: (75.0, 80.0, 5.0, False)
+
+--- Test: get_live_aave_params('0x', 'WBTC') — Incomplete address (0x only) ---
+  Status: PASS
+  Stdout:
+[31mInvalid token address format: 0x. Must be a 42-char 0x address.
+
+  Return value: (75.0, 80.0, 5.0, False)
+
+--- Test: get_live_aave_params('0x1234', 'WBTC') — Too-short address ---
+  Status: PASS
+  Stdout:
+[31mInvalid token address format: 0x1234. Must be a 42-char 0x address.
+
+  Return value: (75.0, 80.0, 5.0, False)
+
+--- Test: get_live_aave_params('notanaddress', 'WBTC') — Non-hex address string ---
+  Status: PASS
+  Stdout:
+[31mInvalid token address format: notanaddress. Must be a 42-char 0x address.
+
+  Return value: (75.0, 80.0, 5.0, False)
+
+--- Test: get_live_aave_params('0x0000000000000000000000000000000000000000', 'ZERO') — Zero address ---
+  Status: PASS
+  Stdout:
+[33mZERO is rejected on Aave V3 (0% Max LTV)
+Application will load default parameters as a mock test
+!!! -> DO NOT INTERPRET THIS AS ACTUAL INFO <- !!!
+Max LTV = 75.0 | Liquidation Threshold = 80.0 | Liquidation Penalty = 5.0
+
+  Return value: (75.0, 80.0, 5.0, False)
+
+--- Test: get_live_aave_params('0xGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG', 'BAD') — Invalid hex chars ---
+  Status: PASS
+  Stdout:
+[31mInvalid hex characters in address: 0xGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+
+  Return value: (75.0, 80.0, 5.0, False)
+
+--- Test: get_live_aave_params('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc', 'SHORT') — 39-char address ---
+  Status: PASS
+  Stdout:
+[31mInvalid token address format: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc. Must be a 42-char 0x address.
+
+  Return value: (75.0, 80.0, 5.0, False)
+
+--- Test: get_live_aave_params('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc22', 'LONG') — 43-char address ---
+  Status: PASS
+  Stdout:
+[31mInvalid token address format: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc22. Must be a 42-char 0x address.
+
+  Return value: (75.0, 80.0, 5.0, False)
+
+--- Test: get_live_aave_params(None, 'WBTC') — None as address ---
+  Status: PASS
+  Stdout:
+[31mInvalid token address type. Expected a string, got NoneType.
+
+  Return value: (75.0, 80.0, 5.0, False)
+
+--- Test: get_live_aave_params(12345, 'WBTC') — Integer as address ---
+  Status: PASS
+  Stdout:
+[31mInvalid token address type. Expected a string, got int.
+
+  Return value: (75.0, 80.0, 5.0, False)
+
+--- Test: get_live_aave_params('0x2260FAC5E5542a773aa44fBCfeDf7C193bc2C599', '') — Empty symbol ---
+  Status: PASS
+  Stdout:
+[32mAave V3 on-chain parameters were extracted for  !
+
+  Return value: (81.0, 85.0, 5.0, True)
+

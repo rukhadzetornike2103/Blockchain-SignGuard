@@ -6,6 +6,20 @@ import yfinance as yf
 class Benchmark:
     #The Test and Benchmark
     def benchmark_test(self, user_target_price, user_invest_amount, token_price_usd, token_real_supply):
+        #Guard against zero or negative inputs so we never hit division by zero
+        if token_price_usd <= 0:
+            print(Fore.RED + "Token price must be greater than 0. Benchmark test skipped.")
+            return None
+        if token_real_supply <= 0:
+            print(Fore.RED + "Token supply must be greater than 0. Benchmark test skipped.")
+            return None
+        if user_target_price <= 0:
+            print(Fore.RED + "Target price must be greater than 0. Benchmark test skipped.")
+            return None
+        if user_invest_amount < 0:
+            print(Fore.RED + "Invest amount cannot be negative. Benchmark test skipped.")
+            return None
+
         #we will fetch market caps from coinGecko
         #try/except to handle communicating with servers
         #initialize the market caps for gold btc and tsla, if fetching fails
@@ -127,7 +141,7 @@ class Benchmark:
     def determine_cap(self, marketcap):
         if marketcap < 1000000000.00:
             return Fore.YELLOW + f"{marketcap:,.2f} $\nMarket Cap is less than 1 Billion"
-        elif 1000000000.00 < marketcap < 10000000000.00:
+        elif 1000000000.00 <= marketcap < 10000000000.00:
             return Fore.LIGHTYELLOW_EX + f"{marketcap:,.2f} $ \nMarket Cap is less than 10 Billion"
         else:
             return Fore.GREEN + f"{marketcap:,.2f} $\nMarket Cap is More than 10 Billion"
@@ -150,8 +164,14 @@ class Benchmark:
                           "uni": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
                           "link": "0x514910771AF9Ca656af840dff83E8264EcF986CA",
                           "aave": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
-                          "xaut": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+                          "xaut": "0x68749665FF8D2d112Fa859AA293F07A622782F38",
+                          "wsteth": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0"
                           }
+
+        #do not send empty queries to DexScreener or CoinGecko
+        if not user_query:
+            print(Fore.RED + "Empty token query. Please enter a valid token symbol or address.")
+            return None, None, 0
 
         # Check if lowercase input is a key in the dictionary
         if token in dex_token_dict:
@@ -317,6 +337,16 @@ class Benchmark:
 
         # Final fallback — if user_query is an address, return it with a mock pool
         if user_query.startswith("0x") and len(user_query) == 42:
+            #before allowing the mock fallback, verify the 40 chars after 0x are valid hex
+            valid_hex = True
+            hex_part = user_query[2:]
+            for char in hex_part:
+                if char not in "0123456789abcdefABCDEF":
+                    valid_hex = False
+                    break
+            if not valid_hex:
+                print(Fore.RED + f"Invalid hex characters in address: {user_query}")
+                return None, None, 0
             print(Fore.YELLOW + "No live DEX pool found. Using mock pool.")
             return user_query, "Mock 5% pool", 0
         else:

@@ -1,0 +1,117 @@
+================================================================================
+  AaveSim Liquidation Simulator Input Tests
+================================================================================
+  Timestamp: 20261122_181355
+
+--- Test: Collateral float('10.0') — Valid collateral ---
+  Status: PASS
+  Return value: 10.0
+
+--- Test: Collateral float('0') — Zero collateral (division risk downstream) ---
+  Status: PASS
+  Return value: 0.0
+
+--- Test: Collateral float('-5.0') — Negative collateral ---
+  Status: PASS
+  Return value: -5.0
+
+--- Test: Collateral float('') — Empty string (float() ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: -5.0
+
+--- Test: Collateral float('abc') — Non-numeric (float() ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: -5.0
+
+--- Test: Collateral float('  ') — Whitespace only (float() ValueError after strip) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: -5.0
+
+--- Test: Loan choice int('1') — Valid choice 1 (crypto) ---
+  Status: PASS
+  Return value: 1
+
+--- Test: Loan choice int('2') — Valid choice 2 (USD) ---
+  Status: PASS
+  Return value: 2
+
+--- Test: Loan choice int('3') — Valid choice 3 (exit) ---
+  Status: PASS
+  Return value: 3
+
+--- Test: Loan choice int('0') — Choice 0 (falls to else) ---
+  Status: PASS
+  Return value: 0
+
+--- Test: Loan choice int('') — Empty string (int() ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: 0
+
+--- Test: Loan choice int('abc') — Non-numeric (int() ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: 0
+
+--- Test: Loan choice int('1.5') — Float string (int() ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: 0
+
+--- Test: Loan amount float('100.0') — Valid loan amount ---
+  Status: PASS
+  Return value: 100.0
+
+--- Test: Loan amount float('0') — Zero loan (guarded by loan_usd <= 0 check) ---
+  Status: PASS
+  Return value: 0.0
+
+--- Test: Loan amount float('-50.0') — Negative loan amount ---
+  Status: PASS
+  Return value: -50.0
+
+--- Test: Loan amount float('') — Empty string (float() ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: -50.0
+
+--- Test: Loan amount float('abc') — Non-numeric (float() ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: -50.0
+
+--- Test: Math: collateral=$0, loan=$100.0, threshold=80.0% — Zero collateral (division by zero in current_ltv) ---
+  Status: PASS
+  Return value: Guarded: coll_usd=0, liq_thresh=80.0 — skipped division (matches aave_sim.py guards)
+
+--- Test: Math: collateral=$1000.0, loan=$0, threshold=80.0% — Zero loan (min_collateral = 0) ---
+  Status: PASS
+  Return value: current_ltv=0.0, min_collateral=0.0
+
+--- Test: Math: collateral=$1000.0, loan=$100.0, threshold=0% — Zero liquidation threshold (division by zero) ---
+  Status: PASS
+  Return value: Guarded: coll_usd=1000.0, liq_thresh=0 — skipped division (matches aave_sim.py guards)
+
+--- Test: Math: collateral=$1000.0, loan=$100.0, threshold=80.0% — Normal case ---
+  Status: PASS
+  Return value: current_ltv=10.0, min_collateral=125.0
+
+--- Test: Math: collateral=$inf, loan=$100.0, threshold=80.0% — Infinity collateral ---
+  Status: PASS
+  Return value: current_ltv=0.0, min_collateral=125.0
+
+--- Test: Math: collateral=$1000.0, loan=$inf, threshold=80.0% — Infinity loan ---
+  Status: PASS
+  Return value: current_ltv=inf, min_collateral=inf
+

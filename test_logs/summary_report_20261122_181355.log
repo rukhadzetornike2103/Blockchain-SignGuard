@@ -1,0 +1,45 @@
+================================================================================
+  Test Summary Report
+================================================================================
+  Timestamp: 20261122_181355
+
+Total log files generated: 5
+
+Log files:
+  - benchmark_tests_20261122_181355.log
+  - aave_sim_tests_20261122_181355.log
+  - main_input_tests_20261122_181355.log
+  - aave_sim_input_tests_20261122_181355.log
+  - data_flow_tests_20261122_181355.log
+
+Status: All previously identified bugs have been FIXED.
+
+Fixed issues:
+  1. main.py menu choice — now wrapped in while True / try-except ValueError loop
+  2. main.py holders count — now wrapped in validation loop with n<=0 and n>100 rejection
+  3. main.py target price — now wrapped in validation loop with <=0 rejection
+  4. main.py invest amount — now wrapped in validation loop with <=0 rejection
+  5. aave_sim.py collateral input — now wrapped in validation loop with zero/negative/inf rejection
+  6. aave_sim.py loan choice — already had try/except, now also wrapped in while True loop
+  7. aave_sim.py loan amount — now wrapped in validation loop with zero/negative/inf rejection
+  8. benchmark.py get_dex_token_data — handles invalid inputs gracefully, added wstETH, empty query check, hex validation
+  9. benchmark.py benchmark_test — guards against zero/negative price, supply, target, invest — returns None safely
+ 10. aave_sim.py liquidation math — guards against zero collateral and zero threshold before division
+ 11. aave_sim.py get_live_aave_params — validates address type, format, length, hex chars — always returns 4-tuple
+ 12. main.py whale_data JSON — wrapped in try/except, checks holders field and list length
+ 13. main.py holders_list[0] — checks len > 0 before accessing, sets whale_balance=0 if empty
+ 14. aave_sim.py duplicate loanGranting — removed dead code line
+ 15. benchmark.py determine_cap — fixed 1B boundary bug (<= instead of <)
+ 16. main.py burn address — now prints address, share %, and dollar value
+
+New features added:
+  - TBC Collateral Preset Menu (WETH, WBTC, XAUT, wstETH, Custom)
+  - Regulated Issuer Compliance Check (Tether USD, Tether Gold, Circle USDC)
+  - TBC Safe LTV Buffer & Auto-Shield Calculator with Calculation D
+  - Live 12-Second Ethereum Block & Position Monitor (Menu Option 2)
+
+Files tested:
+  - main.py (input validation patterns)
+  - benchmark.py (Benchmark class methods)
+  - aave_sim.py (AaveSim class methods)
+  - scanner.py (empty, skipped)

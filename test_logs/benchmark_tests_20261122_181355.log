@@ -1,0 +1,389 @@
+================================================================================
+  Benchmark Class Input Tests
+================================================================================
+  Timestamp: 20261122_181355
+
+--- Test: get_dex_token_data('WBTC') — Known blue-chip symbol ---
+  Status: PASS
+  Stdout:
+[33mTranslated 'wbtc' -> canonical address 0x2260FAC5E5542a773aa44fBCfeDf7C193bc2C599
+[32mDEX POOL Was Found | curve (deepest pool, $39,800,081.40 USD liquidity)
+
+  Return value: ('0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', 'curve', 412.2649)
+
+--- Test: get_dex_token_data('ETH') — Known blue-chip symbol ---
+  Status: PASS
+  Stdout:
+[33mTranslated 'eth' -> canonical address 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
+[32mDEX POOL Was Found | uniswap (deepest pool, $70,392,663.37 USD liquidity)
+
+  Return value: ('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', 'uniswap', 33725.0)
+
+--- Test: get_dex_token_data('USDT') — Stablecoin symbol ---
+  Status: PASS
+  Stdout:
+[33mTranslated 'usdt' -> canonical address 0xdAC17F958D2ee523a2206206994597C13D831ec7
+[32mDEX POOL Was Found | curve (deepest pool, $1,363.47 USD liquidity)
+
+  Return value: ('0xdAC17F958D2ee523a2206206994597C13D831ec7', 'curve', 984.802)
+
+--- Test: get_dex_token_data('UNI') — Known blue-chip symbol ---
+  Status: PASS
+  Stdout:
+[33mTranslated 'uni' -> canonical address 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984
+[32mDEX POOL Was Found | uniswap (deepest pool, $10,472,228.44 USD liquidity)
+
+  Return value: ('0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984', 'uniswap', 1793290.0)
+
+--- Test: get_dex_token_data('LINK') — Known blue-chip symbol ---
+  Status: PASS
+  Stdout:
+[33mTranslated 'link' -> canonical address 0x514910771AF9Ca656af840dff83E8264EcF986CA
+[32mDEX POOL Was Found | uniswap (deepest pool, $11,122,677.61 USD liquidity)
+
+  Return value: ('0x514910771AF9Ca656af840dff83E8264EcF986CA', 'uniswap', 128337.0)
+
+--- Test: get_dex_token_data('Aave') — Known blue-chip symbol (mixed case) ---
+  Status: PASS
+  Stdout:
+[33mTranslated 'aave' -> canonical address 0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9
+[32mDEX POOL Was Found | uniswap (deepest pool, $5,247,310.58 USD liquidity)
+
+  Return value: ('0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9', 'uniswap', 34301.0)
+
+--- Test: get_dex_token_data('xaut') — Known blue-chip symbol (lowercase) ---
+  Status: PASS
+  Stdout:
+[33mTranslated 'xaut' -> canonical address 0x68749665FF8D2d112Fa859AA293F07A622782F38
+[32mDEX POOL Was Found | uniswap (deepest pool, $5,476,069.60 USD liquidity)
+
+  Return value: ('0x68749665FF8D2d112Fa859AA293F07A622782F38', 'uniswap', 619.1333)
+
+--- Test: get_dex_token_data('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2') — WETH canonical address ---
+  Status: PASS
+  Stdout:
+[32mDEX POOL Was Found | uniswap (deepest pool, $70,392,663.37 USD liquidity)
+
+  Return value: ('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', 'uniswap', 33725.0)
+
+--- Test: get_dex_token_data('0x2260FAC5E5542a773aa44fBCfeDf7C193bc2C599') — WBTC canonical address ---
+  Status: PASS
+  Stdout:
+[32mDEX POOL Was Found | curve (deepest pool, $39,800,081.40 USD liquidity)
+
+  Return value: ('0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', 'curve', 412.2649)
+
+--- Test: get_dex_token_data('') — Empty string ---
+  Status: PASS
+  Stdout:
+[31mEmpty token query. Please enter a valid token symbol or address.
+
+  Return value: (None, None, 0)
+
+--- Test: get_dex_token_data('   ') — Whitespace-only string ---
+  Status: PASS
+  Stdout:
+[31mEmpty token query. Please enter a valid token symbol or address.
+
+  Return value: (None, None, 0)
+
+--- Test: get_dex_token_data('NONEXISTENTTOKEN12345') — Non-existent token symbol ---
+  Status: PASS
+  Stdout:
+[33mDexScreener found no Ethereum pairs. Trying CoinGecko fallback...
+[31mCoinGecko search returned no exact symbol match for 'nonexistenttoken12345'.
+[31mAddress Was Not Found
+
+  Return value: (None, None, 0)
+
+--- Test: get_dex_token_data('0x') — Incomplete address (just 0x) ---
+  Status: PASS
+  Stdout:
+[33mDexScreener found no Ethereum pairs. Trying CoinGecko fallback...
+[31mCoinGecko search returned no exact symbol match for '0x'.
+[31mAddress Was Not Found
+
+  Return value: (None, None, 0)
+
+--- Test: get_dex_token_data('0x1234') — Too-short address ---
+  Status: PASS
+  Stdout:
+[33mDexScreener found no Ethereum pairs. Trying CoinGecko fallback...
+[31mCoinGecko search returned no exact symbol match for '0x1234'.
+[31mAddress Was Not Found
+
+  Return value: (None, None, 0)
+
+--- Test: get_dex_token_data('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc') — 39-char address (too short) ---
+  Status: PASS
+  Stdout:
+[33mDexScreener found no Ethereum pairs. Trying CoinGecko fallback...
+[31mCoinGecko search returned no exact symbol match for '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc'.
+[31mAddress Was Not Found
+
+  Return value: (None, None, 0)
+
+--- Test: get_dex_token_data('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc22') — 43-char address (too long) ---
+  Status: PASS
+  Stdout:
+[33mDexScreener found no Ethereum pairs. Trying CoinGecko fallback...
+[31mCoinGecko search returned no exact symbol match for '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc22'.
+[31mAddress Was Not Found
+
+  Return value: (None, None, 0)
+
+--- Test: get_dex_token_data('abc') — Random short string ---
+  Status: PASS
+  Stdout:
+[33mDexScreener found no Ethereum pairs. Trying CoinGecko fallback...
+[31mCoinGecko coin details failed with status 429
+[31mAddress Was Not Found
+
+  Return value: (None, None, 0)
+
+--- Test: get_dex_token_data('0xGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG') — Invalid hex chars in address ---
+  Status: PASS
+  Stdout:
+[31mdex_data[pairs] is empty
+[31mInvalid hex characters in address: 0xGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+
+  Return value: (None, None, 0)
+
+--- Test: get_dex_token_data('12345') — Numeric string ---
+  Status: PASS
+  Stdout:
+[33mDexScreener found no Ethereum pairs. Trying CoinGecko fallback...
+[31mCoinGecko search returned no exact symbol match for '12345'.
+[31mAddress Was Not Found
+
+  Return value: (None, None, 0)
+
+--- Test: get_dex_token_data('!@#$%') — Special characters ---
+  Status: PASS
+  Stdout:
+[33mDexScreener found no Ethereum pairs. Trying CoinGecko fallback...
+[31mCoinGecko search returned no exact symbol match for '!@#$%'.
+[31mAddress Was Not Found
+
+  Return value: (None, None, 0)
+
+--- Test: get_dex_token_data('0x0000000000000000000000000000000000000000') — Zero address ---
+  Status: PASS
+  Stdout:
+[32mDEX POOL Was Found | uniswap (deepest pool, $12,286,961.81 USD liquidity)
+
+  Return value: ('0x0000000000000000000000000000000000000000', 'uniswap', 7068.6637)
+
+--- Test: get_dex_token_data('pepe') — Meme coin (may or may not resolve) ---
+  Status: PASS
+  Stdout:
+[32mDEX POOL Was Found | uniswap (deepest pool, $22,894,676.33 USD liquidity)
+
+  Return value: ('0x6982508145454Ce325dDbE47a25d4ec3d2311933', 'uniswap', 3358828832553.0)
+
+--- Test: get_dex_token_data('SHIB') — Shiba Inu (may or may not resolve) ---
+  Status: PASS
+  Stdout:
+[32mDEX POOL Was Found | shibaswap (deepest pool, $1,971,378.68 USD liquidity)
+
+  Return value: ('0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE', 'shibaswap', 271943777068.0)
+
+--- Test: determine_cap(0) — Zero market cap ---
+  Status: PASS
+  Return value: [33m0.00 $
+Market Cap is less than 1 Billion
+
+--- Test: determine_cap(-1000) — Negative market cap ---
+  Status: PASS
+  Return value: [33m-1,000.00 $
+Market Cap is less than 1 Billion
+
+--- Test: determine_cap(100) — Very small cap ---
+  Status: PASS
+  Return value: [33m100.00 $
+Market Cap is less than 1 Billion
+
+--- Test: determine_cap(999999999.99) — Just under 1B ---
+  Status: PASS
+  Return value: [33m999,999,999.99 $
+Market Cap is less than 1 Billion
+
+--- Test: determine_cap(1000000000.0) — Exactly 1B (boundary) ---
+  Status: PASS
+  Return value: [93m1,000,000,000.00 $ 
+Market Cap is less than 10 Billion
+
+--- Test: determine_cap(1000000000.01) — Just over 1B ---
+  Status: PASS
+  Return value: [93m1,000,000,000.01 $ 
+Market Cap is less than 10 Billion
+
+--- Test: determine_cap(5000000000.0) — 5B (between 1B and 10B) ---
+  Status: PASS
+  Return value: [93m5,000,000,000.00 $ 
+Market Cap is less than 10 Billion
+
+--- Test: determine_cap(9999999999.99) — Just under 10B ---
+  Status: PASS
+  Return value: [93m9,999,999,999.99 $ 
+Market Cap is less than 10 Billion
+
+--- Test: determine_cap(10000000000.0) — Exactly 10B (boundary) ---
+  Status: PASS
+  Return value: [32m10,000,000,000.00 $
+Market Cap is More than 10 Billion
+
+--- Test: determine_cap(100000000000.0) — 100B (large cap) ---
+  Status: PASS
+  Return value: [32m100,000,000,000.00 $
+Market Cap is More than 10 Billion
+
+--- Test: determine_cap(inf) — Infinity ---
+  Status: PASS
+  Return value: [32minf $
+Market Cap is More than 10 Billion
+
+--- Test: determine_cap(-inf) — Negative infinity ---
+  Status: PASS
+  Return value: [33m-inf $
+Market Cap is less than 1 Billion
+
+--- Test: benchmark_test(target=1.0, invest=100.0, price=0.001, supply=1000000000) — Realistic target price ---
+  Status: PASS
+  Stdout:
+Analysis Done...
+[32mRealistic Target
+Required Market Cap        | $1,000,000,000.00 can be achieved
+Target Growth (X)          | 1,000.00x
+Expected Payout            | $100,000.00
+However, unlikely if Meme-Coin
+
+
+--- Test: benchmark_test(target=10.0, invest=50.0, price=0.0001, supply=10000000000) — High target price ---
+  Status: PASS
+  Stdout:
+Analysis Done...
+[33mHigh Ambition: Requires: 100B+ $ (Top 5 Global Crypto Asset)
+Required Target Market Cap | $100,000,000,000.00
+Target Growth (X)          | 100,000.00x
+Expected Payout            | $5,000,000.00
+
+
+--- Test: benchmark_test(target=0.01, invest=10.0, price=0.005, supply=500000000) — Low target price ---
+  Status: PASS
+  Stdout:
+Analysis Done...
+[32mRealistic Target
+Required Market Cap        | $5,000,000.00 can be achieved
+Target Growth (X)          | 2.00x
+Expected Payout            | $20.00
+However, unlikely if Meme-Coin
+
+
+--- Test: benchmark_test(target=0, invest=100.0, price=0.001, supply=1000000000) — Zero target price (division by zero risk) ---
+  Status: PASS
+  Stdout:
+[31mTarget price must be greater than 0. Benchmark test skipped.
+
+
+--- Test: benchmark_test(target=-1.0, invest=100.0, price=0.001, supply=1000000000) — Negative target price ---
+  Status: PASS
+  Stdout:
+[31mTarget price must be greater than 0. Benchmark test skipped.
+
+
+--- Test: benchmark_test(target=1.0, invest=0, price=0.001, supply=1000000000) — Zero invest amount ---
+  Status: PASS
+  Stdout:
+Analysis Done...
+[32mRealistic Target
+Required Market Cap        | $1,000,000,000.00 can be achieved
+Target Growth (X)          | 1,000.00x
+Expected Payout            | $0.00
+However, unlikely if Meme-Coin
+
+
+--- Test: benchmark_test(target=1.0, invest=-50.0, price=0.001, supply=1000000000) — Negative invest amount ---
+  Status: PASS
+  Stdout:
+[31mInvest amount cannot be negative. Benchmark test skipped.
+
+
+--- Test: benchmark_test(target=1.0, invest=100.0, price=0, supply=1000000000) — Zero token price (division by zero risk) ---
+  Status: PASS
+  Stdout:
+[31mToken price must be greater than 0. Benchmark test skipped.
+
+
+--- Test: benchmark_test(target=1.0, invest=100.0, price=-0.001, supply=1000000000) — Negative token price ---
+  Status: PASS
+  Stdout:
+[31mToken price must be greater than 0. Benchmark test skipped.
+
+
+--- Test: benchmark_test(target=1.0, invest=100.0, price=0.001, supply=0) — Zero token supply ---
+  Status: PASS
+  Stdout:
+[31mToken supply must be greater than 0. Benchmark test skipped.
+
+
+--- Test: benchmark_test(target=1.0, invest=100.0, price=0.001, supply=-1000000) — Negative token supply ---
+  Status: PASS
+  Stdout:
+[31mToken supply must be greater than 0. Benchmark test skipped.
+
+
+--- Test: benchmark_test(target=inf, invest=100.0, price=0.001, supply=1000000000) — Infinity target price ---
+  Status: PASS
+  Stdout:
+[31mCould Not Access URL | https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_market_cap=true
+Failed Fetching Bitcoing M-CAP 'bitcoin'
+Analysis Done...
+[31m!!!CRITICAL MEMECOIN TRAP!!!
+Required Target Market Cap | $inf
+Ratio to Global Gold       | infx Larger than all the Gold
+Target Growth (X)          | infx
+Expected Payout            | $inf
+Max Possible Price at Gold | $24,017.3304113721
+
+
+--- Test: benchmark_test(target=1.0, invest=inf, price=0.001, supply=1000000000) — Infinity invest amount ---
+  Status: PASS
+  Stdout:
+[31mCould Not Access URL | https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_market_cap=true
+Failed Fetching Bitcoing M-CAP 'bitcoin'
+Analysis Done...
+[32mRealistic Target
+Required Market Cap        | $1,000,000,000.00 can be achieved
+Target Growth (X)          | 1,000.00x
+Expected Payout            | $inf
+However, unlikely if Meme-Coin
+
+
+--- Test: benchmark_test(target=1.0, invest=100.0, price=inf, supply=1000000000) — Infinity token price ---
+  Status: PASS
+  Stdout:
+[31mCould Not Access URL | https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_market_cap=true
+Failed Fetching Bitcoing M-CAP 'bitcoin'
+Analysis Done...
+[32mRealistic Target
+Required Market Cap        | $1,000,000,000.00 can be achieved
+Target Growth (X)          | 0.00x
+Expected Payout            | $0.00
+However, unlikely if Meme-Coin
+
+
+--- Test: benchmark_test(target=1.0, invest=100.0, price=0.001, supply=inf) — Infinity token supply ---
+  Status: PASS
+  Stdout:
+[31mCould Not Access URL | https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_market_cap=true
+Failed Fetching Bitcoing M-CAP 'bitcoin'
+Analysis Done...
+[31m!!!CRITICAL MEMECOIN TRAP!!!
+Required Target Market Cap | $inf
+Ratio to Global Gold       | infx Larger than all the Gold
+Target Growth (X)          | 1,000.00x
+Expected Payout            | $100,000.00
+Max Possible Price at Gold | $0.0000000000
+
+

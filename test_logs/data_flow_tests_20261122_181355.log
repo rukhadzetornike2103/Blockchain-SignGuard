@@ -1,0 +1,36 @@
+================================================================================
+  Data Flow Integration Tests
+================================================================================
+  Timestamp: 20261122_181355
+
+--- Test: Flow: 'WBTC' — Valid symbol -> should get address (addr=0x2260FAC5..., pool=412.2649) ---
+  Status: PASS
+  Stdout:
+[33mTranslated 'wbtc' -> canonical address 0x2260FAC5E5542a773aa44fBCfeDf7C193bc2C599
+[32mDEX POOL Was Found | curve (deepest pool, $39,800,081.40 USD liquidity)
+
+  Return value: OK: pool_tokens=412.2649
+
+--- Test: Flow: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' — Valid address (addr=0xC02aaA39..., pool=33725.0) ---
+  Status: PASS
+  Stdout:
+[32mDEX POOL Was Found | uniswap (deepest pool, $70,392,670.41 USD liquidity)
+
+  Return value: OK: pool_tokens=33725.0
+
+--- Test: Flow: 'NONEXISTENT123' — Invalid symbol -> should return None (address is None/falsy, would skip) ---
+  Status: PASS
+  Stdout:
+[33mDexScreener found no Ethereum pairs. Trying CoinGecko fallback...
+[31mCoinGecko search returned no exact symbol match for 'nonexistent123'.
+[31mAddress Was Not Found
+
+  Return value: Skipped (no address)
+
+--- Test: Flow: '' — Empty -> should return None (address is None/falsy, would skip) ---
+  Status: PASS
+  Stdout:
+[31mEmpty token query. Please enter a valid token symbol or address.
+
+  Return value: Skipped (no address)
+

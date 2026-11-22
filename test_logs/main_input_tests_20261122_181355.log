@@ -1,0 +1,207 @@
+================================================================================
+  Main.py Input Validation Tests
+================================================================================
+  Timestamp: 20261122_181355
+
+Note: Token symbol inputs are tested in benchmark_tests log.
+
+--- Test: Menu choice int('1') — Valid menu choice 1 ---
+  Status: PASS
+  Return value: 1
+
+--- Test: Menu choice int('2') — Valid menu choice 2 ---
+  Status: PASS
+  Return value: 2
+
+--- Test: Menu choice int('0') — Menu choice 0 (falls through to else) ---
+  Status: PASS
+  Return value: 0
+
+--- Test: Menu choice int('3') — Menu choice 3 (falls through to else) ---
+  Status: PASS
+  Return value: 3
+
+--- Test: Menu choice int('-1') — Negative menu choice ---
+  Status: PASS
+  Return value: -1
+
+--- Test: Menu choice int('999') — Large menu choice ---
+  Status: PASS
+  Return value: 999
+
+--- Test: Menu choice int('') — Empty string (int() will raise ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: 999
+
+--- Test: Menu choice int('abc') — Non-numeric string (int() will raise ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: 999
+
+--- Test: Menu choice int('1.5') — Float string (int() will raise ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: 999
+
+--- Test: Menu choice int('  ') — Whitespace (int() will raise ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: 999
+
+--- Test: Menu choice int('y') — Letter input (int() will raise ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: 999
+
+--- Test: Menu choice int('!!') — Special characters (int() will raise ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: 999
+
+--- Test: Yes/No validation 'yes' — Valid 'yes' ---
+  Status: PASS
+
+--- Test: Yes/No validation 'y' — Valid 'y' ---
+  Status: PASS
+
+--- Test: Yes/No validation 'no' — Valid 'no' ---
+  Status: PASS
+
+--- Test: Yes/No validation 'n' — Valid 'n' ---
+  Status: PASS
+
+--- Test: Yes/No validation 'YES' — Uppercase YES ---
+  Status: PASS
+
+--- Test: Yes/No validation 'No' — Mixed case No ---
+  Status: PASS
+
+--- Test: Yes/No validation '' — Empty string (invalid) ---
+  Status: PASS
+
+--- Test: Yes/No validation 'maybe' — Ambiguous input ---
+  Status: PASS
+
+--- Test: Yes/No validation '1' — Numeric input ---
+  Status: PASS
+
+--- Test: Yes/No validation 'yes no' — Two words ---
+  Status: PASS
+
+--- Test: Holders count int('5') — Valid number ---
+  Status: PASS
+  Return value: 5
+
+--- Test: Holders count int('1') — Minimum reasonable number ---
+  Status: PASS
+  Return value: 1
+
+--- Test: Holders count int('100') — Large number ---
+  Status: PASS
+  Return value: 100
+
+--- Test: Holders count int('0') — Zero (may cause API issues) ---
+  Status: PASS
+  Return value: 0
+
+--- Test: Holders count int('-1') — Negative number (may cause API issues) ---
+  Status: PASS
+  Return value: -1
+
+--- Test: Holders count int('') — Empty string (int() ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: -1
+
+--- Test: Holders count int('abc') — Non-numeric (int() ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: -1
+
+--- Test: Holders count int('3.5') — Float string (int() ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: -1
+
+--- Test: Target price float('1.00') — Valid price ---
+  Status: PASS
+  Return value: 1.0
+
+--- Test: Target price float('0.001') — Small price ---
+  Status: PASS
+  Return value: 0.001
+
+--- Test: Target price float('1000000.00') — Very large price ---
+  Status: PASS
+  Return value: 1000000.0
+
+--- Test: Target price float('0') — Zero price ---
+  Status: PASS
+  Return value: 0.0
+
+--- Test: Target price float('-1.0') — Negative price ---
+  Status: PASS
+  Return value: -1.0
+
+--- Test: Target price float('') — Empty string (float() ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: -1.0
+
+--- Test: Target price float('abc') — Non-numeric (float() ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: -1.0
+
+--- Test: Target price float('1,000') — Comma-separated (float() ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: -1.0
+
+--- Test: Target price float('$100') — Dollar sign prefix (float() ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: -1.0
+
+--- Test: Invest amount float('100') — Valid amount ---
+  Status: PASS
+  Return value: 100.0
+
+--- Test: Invest amount float('0.01') — Small amount ---
+  Status: PASS
+  Return value: 0.01
+
+--- Test: Invest amount float('0') — Zero amount ---
+  Status: PASS
+  Return value: 0.0
+
+--- Test: Invest amount float('-50') — Negative amount ---
+  Status: PASS
+  Return value: -50.0
+
+--- Test: Invest amount float('') — Empty string (float() ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: -50.0
+
+--- Test: Invest amount float('abc') — Non-numeric (float() ValueError) ---
+  Status: PASS
+  Error:
+ValueError (expected)
+  Return value: -50.0
+
